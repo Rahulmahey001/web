@@ -10,6 +10,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
         
         body {
@@ -18,7 +19,8 @@
             align-items: center;
             min-height: 100vh;
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            padding: 20px;
+            padding: 15px;
+            touch-action: manipulation; /* Prevent browser gestures */
         }
         
         .game-container {
@@ -28,17 +30,17 @@
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
             width: 100%;
+            max-width: 500px;
         }
         
         h1 {
             color: white;
             margin-bottom: 15px;
             text-align: center;
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         
@@ -48,14 +50,16 @@
             width: 100%;
             margin-bottom: 15px;
             color: white;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 4vw, 1.2rem);
         }
         
         .score-container, .high-score-container {
             background-color: rgba(0, 0, 0, 0.3);
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 10px;
             text-align: center;
+            flex: 1;
+            margin: 0 5px;
         }
         
         #game-board {
@@ -64,6 +68,9 @@
             background-color: rgba(0, 0, 0, 0.2);
             display: block;
             margin: 0 auto;
+            max-width: 100%;
+            max-height: 60vh;
+            aspect-ratio: 1 / 1; /* Keep canvas square */
         }
         
         .controls {
@@ -90,15 +97,16 @@
             color: white;
             padding: 15px;
             border-radius: 50%;
-            font-size: 1.5rem;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
             cursor: pointer;
-            width: 60px;
-            height: 60px;
+            width: clamp(50px, 15vw, 70px);
+            height: clamp(50px, 15vw, 70px);
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.2s;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            touch-action: manipulation; /* Better touch handling */
         }
         
         .btn:hover {
@@ -108,6 +116,7 @@
         
         .btn:active {
             transform: scale(0.95);
+            background-color: rgba(255, 255, 255, 0.4);
         }
         
         #up {
@@ -132,11 +141,13 @@
             border: none;
             padding: 12px 30px;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 4vw, 1.2rem);
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 200px;
         }
         
         #start-btn:hover {
@@ -152,7 +163,7 @@
             color: white;
             text-align: center;
             margin-top: 20px;
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 3vw, 0.9rem);
             line-height: 1.5;
             background-color: rgba(0, 0, 0, 0.2);
             padding: 15px;
@@ -165,24 +176,26 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 15px;
             text-align: center;
             display: none;
             z-index: 10;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            width: 85%;
+            max-width: 350px;
         }
         
         .game-over h2 {
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
             margin-bottom: 15px;
             color: #ff4d4d;
         }
         
         .game-over p {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 4vw, 1.2rem);
             margin-bottom: 20px;
         }
         
@@ -192,9 +205,10 @@
             border: none;
             padding: 12px 30px;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 4vw, 1.2rem);
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
         }
         
         #restart-btn:hover {
@@ -202,24 +216,66 @@
             transform: translateY(-2px);
         }
         
-        @media (max-width: 500px) {
+        /* Swipe controls for mobile */
+        .swipe-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            display: none; /* Hidden by default, shown on mobile */
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
             .game-container {
                 padding: 15px;
             }
             
-            h1 {
-                font-size: 2rem;
+            .swipe-area {
+                display: block; /* Enable swipe controls on mobile */
+            }
+            
+            .direction-buttons {
+                gap: 8px;
             }
             
             .btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
+                width: clamp(45px, 14vw, 60px);
+                height: clamp(45px, 14vw, 60px);
             }
+        }
+        
+        @media (max-width: 500px) {
+            body {
+                padding: 10px;
+            }
+            
+            .game-container {
+                padding: 12px;
+            }
+            
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .score-container, .high-score-container {
+                margin: 0;
+            }
+        }
+        
+        /* Prevent text selection during gameplay */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
     </style>
 </head>
-<body>
+<body class="no-select">
     <div class="game-container">
         <h1>Snake Game</h1>
         
@@ -234,7 +290,10 @@
             </div>
         </div>
         
-        <canvas id="game-board" width="400" height="400"></canvas>
+        <canvas id="game-board"></canvas>
+        
+        <!-- Swipe area for mobile controls -->
+        <div class="swipe-area" id="swipe-area"></div>
         
         <div class="controls">
             <div class="direction-buttons">
@@ -248,7 +307,7 @@
         </div>
         
         <div class="instructions">
-            <p>Use arrow keys or buttons to control the snake. Eat the red food to grow and earn points. Avoid hitting the walls or yourself!</p>
+            <p>Use arrow keys, buttons, or swipe to control the snake. Eat the red food to grow and earn points. Avoid hitting the walls or yourself!</p>
         </div>
     </div>
     
@@ -274,11 +333,11 @@
             right: document.getElementById('right'),
             down: document.getElementById('down')
         };
+        const swipeArea = document.getElementById('swipe-area');
 
         // Game constants
         const gridSize = 20;
-        const gridWidth = canvas.width / gridSize;
-        const gridHeight = canvas.height / gridSize;
+        let gridWidth, gridHeight;
 
         // Game state
         let snake = [];
@@ -290,6 +349,16 @@
         let highScore = localStorage.getItem('snakeHighScore') || 0;
         let gameRunning = false;
         let gameLoop;
+
+        // Initialize canvas size based on screen size
+        function initCanvas() {
+            const maxSize = Math.min(window.innerWidth * 0.85, window.innerHeight * 0.6, 400);
+            canvas.width = maxSize;
+            canvas.height = maxSize;
+            
+            gridWidth = Math.floor(canvas.width / gridSize);
+            gridHeight = Math.floor(canvas.height / gridSize);
+        }
 
         // Initialize game
         function initGame() {
@@ -506,6 +575,52 @@
             }
         }
 
+        // Swipe controls for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        swipeArea.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            e.preventDefault(); // Prevent scrolling
+        }, { passive: false });
+        
+        swipeArea.addEventListener('touchmove', (e) => {
+            if (!touchStartX || !touchStartY) return;
+            
+            const touchEndX = e.touches[0].clientX;
+            const touchEndY = e.touches[0].clientY;
+            
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            // Only register swipe if movement is significant
+            if (Math.abs(diffX) > 20 || Math.abs(diffY) > 20) {
+                // Determine primary direction of swipe
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    // Horizontal swipe
+                    if (diffX > 0) {
+                        changeDirection('left');
+                    } else {
+                        changeDirection('right');
+                    }
+                } else {
+                    // Vertical swipe
+                    if (diffY > 0) {
+                        changeDirection('up');
+                    } else {
+                        changeDirection('down');
+                    }
+                }
+                
+                // Reset touch start position to prevent multiple direction changes
+                touchStartX = 0;
+                touchStartY = 0;
+            }
+            
+            e.preventDefault(); // Prevent scrolling
+        }, { passive: false });
+
         // Event listeners for keyboard controls
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
@@ -537,11 +652,22 @@
         startButton.addEventListener('click', startGame);
         restartButton.addEventListener('click', startGame);
 
+        // Initialize canvas and game on load
+        window.addEventListener('load', () => {
+            initCanvas();
+            initGame();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            initCanvas();
+            if (gameRunning) {
+                draw();
+            }
+        });
+
         // Initialize high score display
         highScoreElement.textContent = highScore;
-
-        // Draw initial state
-        draw();
     </script>
 </body>
 </html>
